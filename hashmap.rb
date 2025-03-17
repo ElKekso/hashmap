@@ -10,6 +10,10 @@ class KeyValuePair
     @value = value
   end
 
+  def to_array
+    [@key, @value]
+  end
+
 end
 
 class HashMap
@@ -50,16 +54,112 @@ class HashMap
     if !list.nil?
        if !list.head.nil?
         current_node = list.head
-        for j in 1..list.size
+        for j in 1..list.size do
           if current_node.value.key == key
             return current_node.value.value
           end
           current_node = current_node.next_node
         end
       end
-     end
+    end
+    nil
   end
 
+  def has?(key)
+    if self.get(key).nil?
+      false
+    else
+      true
+    end
+  end
+
+  def remove(key)
+    list = @buckets[hash(key)]
+    if !list.nil?
+       if !list.head.nil?
+        current_node = list.head
+        for j in 0..list.size - 1 do
+          if current_node.value.key == key
+            list.remove_at(j)
+            return current_node.value.value
+          end
+          current_node = current_node.next_node
+        end
+      end
+    end
+    nil
+  end
+
+  def length
+    length = 0
+    for i in 0..@buckets.size - 1 do
+      list = @buckets[i]
+      if !list.nil?
+        if !list.head.nil?
+          current_node = list.head
+          for j in 0..list.size - 1 do
+            length += 1
+            current_node = current_node.next_node
+          end
+        end
+      end
+    end
+    length
+  end
+
+  def clear
+    @buckets.clear
+  end
+
+  def keys
+    keys = Array.new
+    for i in 0..@buckets.size - 1 do
+      list = @buckets[i]
+      if !list.nil?
+        if !list.head.nil?
+          current_node = list.head
+          for j in 0..list.size - 1 do
+            keys.push(current_node.value.key)
+            current_node = current_node.next_node
+          end
+        end
+      end
+    end
+    keys
+  end
   
-  
+  def values
+    values = Array.new
+    for i in 0..@buckets.size - 1 do
+      list = @buckets[i]
+      if !list.nil?
+        if !list.head.nil?
+          current_node = list.head
+          for j in 0..list.size - 1 do
+            values.push(current_node.value.value)
+            current_node = current_node.next_node
+          end
+        end
+      end
+    end
+    values
+  end
+
+  def entries
+    entries = Array.new
+    for i in 0..@buckets.size - 1 do
+      list = @buckets[i]
+      if !list.nil?
+        if !list.head.nil?
+          current_node = list.head
+          for j in 0..list.size - 1 do
+            entries.push(current_node.value.to_array)
+            current_node = current_node.next_node
+          end
+        end
+      end
+    end
+    entries
+  end
+
 end
