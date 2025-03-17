@@ -19,7 +19,7 @@ end
 class HashMap
   
   attr_accessor :load_factor
-  attr_reader :length
+  attr_reader :length, :capacity
 
   def initialize
     @load_factor = 0.8
@@ -38,24 +38,32 @@ class HashMap
   end
 
   def set(key, value)
+    @length += 1 if !self.has?(key)
+    self.adjust_capacity
+
     h_key = hash(key)
     kv_pair = KeyValuePair.new(key, value)
-
-    @length += 1
-
-    self.adjust_capacity
 
     if @buckets[h_key].nil?
       ll = LinkedList.new
       ll.append(kv_pair)
       @buckets[h_key] = ll
     else
+      list = @buckets[h_key]
+      current_node = list.head
+      for j in 1..list.size do
+        if current_node.value.key == key
+          current_node.value.value = value
+          return
+        end
+        current_node = current_node.next_node
+      end
       @buckets[h_key].append(kv_pair)
     end
   end
 
   def adjust_capacity
-    if self.length >= @capacity * @load_factor
+    if self.length > @capacity * @load_factor
       @capacity *= 2
       data = self.entries
       self.clear
@@ -111,7 +119,7 @@ class HashMap
 
   def clear
     @buckets.clear
-    @length = 0
+    @length = 1
   end
 
   def keys
